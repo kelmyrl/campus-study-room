@@ -1,121 +1,110 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
 
-function App() {
-  const [count, setCount] = useState(0)
+import { STUDY_ROOMS } from './rooms';
+import './App.css';
 
+const App: React.FC = () => {
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
-
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
+    <div className="app-container">
+      <header className="app-header">
+        <h1>Campus Study Room Finder</h1>
+      </header>
+      <main className="main-layout">
+        <aside className="filters-panel">
+          {/* Filters will go here in the future */}
+          <div className="filters-placeholder">
+            <h2>Filters</h2>
+            <p>(Coming soon)</p>
+          </div>
+        </aside>
+        <section className="room-list-section">
+          <h2>Available Study Rooms</h2>
+          <ul className="room-list">
+            {STUDY_ROOMS.map((room) => (
+              <li key={room.id} className="room-list-item">
+                <div className="room-main-info">
+                  <strong>{room.building} {room.roomNumber}</strong> &mdash; Capacity: {room.capacity}
+                </div>
+                <div className="room-features">
+                  Features: {room.features.slice(0, 3).join(', ') || 'None'}
+                </div>
+              </li>
+            ))}
           </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+        </section>
+      </main>
+      {/* Inline styles for basic responsive layout */}
+      <style>{`
+        .app-container {
+          font-family: Arial, sans-serif;
+          background: #f8f9fa;
+          min-height: 100vh;
+        }
+        .app-header {
+          background: #2d3e50;
+          color: #fff;
+          padding: 1.5rem 1rem 1rem 1rem;
+          text-align: center;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+        .main-layout {
+          display: flex;
+          flex-direction: row;
+          align-items: flex-start;
+          max-width: 1100px;
+          margin: 2rem auto;
+          gap: 2rem;
+          padding: 0 1rem;
+        }
+        .filters-panel {
+          flex: 0 0 260px;
+          background: #fff;
+          border-radius: 8px;
+          box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+          padding: 1.5rem 1rem;
+          min-height: 300px;
+        }
+        .filters-placeholder {
+          color: #888;
+        }
+        .room-list-section {
+          flex: 1 1 0%;
+          background: #fff;
+          border-radius: 8px;
+          box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+          padding: 1.5rem 1rem;
+        }
+        .room-list {
+          list-style: none;
+          margin: 0;
+          padding: 0;
+        }
+        .room-list-item {
+          border-bottom: 1px solid #eee;
+          padding: 0.75rem 0;
+        }
+        .room-list-item:last-child {
+          border-bottom: none;
+        }
+        .room-main-info {
+          font-size: 1.1rem;
+        }
+        .room-features {
+          color: #555;
+          font-size: 0.97rem;
+        }
+        @media (max-width: 700px) {
+          .main-layout {
+            flex-direction: column;
+            gap: 1.2rem;
+          }
+          .filters-panel, .room-list-section {
+            min-width: 0;
+            width: 100%;
+          }
+        }
+      `}</style>
+    </div>
+  );
+};
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
-}
-
-export default App
+export default App;
