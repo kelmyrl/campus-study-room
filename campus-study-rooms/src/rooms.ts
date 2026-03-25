@@ -1,0 +1,148 @@
+// TypeScript type for a study room
+export type StudyRoom = {
+  id: string;
+  building: string;
+  roomNumber: string;
+  capacity: number;
+  features: string[];
+  floor: number;
+  isQuiet: boolean;
+  hasWhiteboard: boolean;
+  hasMonitor: boolean;
+};
+
+// Sample data: 12 rooms across 4 buildings
+export const STUDY_ROOMS: StudyRoom[] = [
+  {
+    id: 'lib-101',
+    building: 'Library',
+    roomNumber: '101',
+    capacity: 4,
+    features: ['whiteboard', 'quiet'],
+    floor: 1,
+    isQuiet: true,
+    hasWhiteboard: true,
+    hasMonitor: false,
+  },
+  {
+    id: 'lib-202',
+    building: 'Library',
+    roomNumber: '202',
+    capacity: 6,
+    features: ['monitor', 'near coffee'],
+    floor: 2,
+    isQuiet: false,
+    hasWhiteboard: false,
+    hasMonitor: true,
+  },
+  {
+    id: 'lib-303',
+    building: 'Library',
+    roomNumber: '303',
+    capacity: 8,
+    features: ['whiteboard', 'monitor'],
+    floor: 3,
+    isQuiet: false,
+    hasWhiteboard: true,
+    hasMonitor: true,
+  },
+  {
+    id: 'eng-110',
+    building: 'Engineering Hall',
+    roomNumber: '110',
+    capacity: 2,
+    features: ['quiet'],
+    floor: 1,
+    isQuiet: true,
+    hasWhiteboard: false,
+    hasMonitor: false,
+  },
+  {
+    id: 'eng-215',
+    building: 'Engineering Hall',
+    roomNumber: '215',
+    capacity: 10,
+    features: ['whiteboard', 'monitor'],
+    floor: 2,
+    isQuiet: false,
+    hasWhiteboard: true,
+    hasMonitor: true,
+  },
+  {
+    id: 'eng-305',
+    building: 'Engineering Hall',
+    roomNumber: '305',
+    capacity: 6,
+    features: ['whiteboard', 'near coffee'],
+    floor: 3,
+    isQuiet: false,
+    hasWhiteboard: true,
+    hasMonitor: false,
+  },
+  {
+    id: 'sci-120',
+    building: 'Science Center',
+    roomNumber: '120',
+    capacity: 3,
+    features: ['quiet', 'near coffee'],
+    floor: 1,
+    isQuiet: true,
+    hasWhiteboard: false,
+    hasMonitor: false,
+  },
+  {
+    id: 'sci-201',
+    building: 'Science Center',
+    roomNumber: '201',
+    capacity: 5,
+    features: ['whiteboard'],
+    floor: 2,
+    isQuiet: false,
+    hasWhiteboard: true,
+    hasMonitor: false,
+  },
+  {
+    id: 'sci-302',
+    building: 'Science Center',
+    roomNumber: '302',
+    capacity: 7,
+    features: ['monitor', 'quiet'],
+    floor: 3,
+    isQuiet: true,
+    hasWhiteboard: false,
+    hasMonitor: true,
+  },
+  {
+    id: 'bus-101',
+    building: 'Business School',
+    roomNumber: '101',
+    capacity: 4,
+    features: ['whiteboard', 'near coffee'],
+    floor: 1,
+    isQuiet: false,
+    hasWhiteboard: true,
+    hasMonitor: false,
+  },
+  {
+    id: 'bus-210',
+    building: 'Business School',
+    roomNumber: '210',
+    capacity: 8,
+    features: ['monitor'],
+    floor: 2,
+    isQuiet: false,
+    hasWhiteboard: false,
+    hasMonitor: true,
+  },
+  {
+    id: 'bus-305',
+    building: 'Business School',
+    roomNumber: '305',
+    capacity: 12,
+    features: ['whiteboard', 'monitor', 'quiet'],
+    floor: 3,
+    isQuiet: true,
+    hasWhiteboard: true,
+    hasMonitor: true,
+  },
+];
