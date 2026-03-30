@@ -1,8 +1,28 @@
 
-import { STUDY_ROOMS } from './rooms';
+import React, { useState } from 'react';
+import { STUDY_ROOMS, type StudyRoom } from './rooms';
+import RoomFilters from './RoomFilters';
 import './App.css';
 
+export type ActiveFilters = {
+  building: string | null;
+  minCapacity: number | null;
+  features: string[];
+};
+
 const App: React.FC = () => {
+  const [filteredRooms, setFilteredRooms] = useState<StudyRoom[]>(STUDY_ROOMS);
+  const [activeFilters, setActiveFilters] = useState<ActiveFilters>({
+    building: null,
+    minCapacity: null,
+    features: [],
+  });
+
+  const handleFilterChange = (nextFilteredRooms: StudyRoom[], nextActiveFilters: ActiveFilters) => {
+    setFilteredRooms(nextFilteredRooms);
+    setActiveFilters(nextActiveFilters);
+  };
+
   return (
     <div className="app-container">
       <header className="app-header">
@@ -10,16 +30,13 @@ const App: React.FC = () => {
       </header>
       <main className="main-layout">
         <aside className="filters-panel">
-          {/* Filters will go here in the future */}
-          <div className="filters-placeholder">
-            <h2>Filters</h2>
-            <p>(Coming soon)</p>
-          </div>
+          <h2>Filters</h2>
+          <RoomFilters allRooms={STUDY_ROOMS} onFilterChange={handleFilterChange} />
         </aside>
         <section className="room-list-section">
           <h2>Available Study Rooms</h2>
           <ul className="room-list">
-            {STUDY_ROOMS.map((room) => (
+            {filteredRooms.map((room) => (
               <li key={room.id} className="room-list-item">
                 <div className="room-main-info">
                   <strong>{room.building} {room.roomNumber}</strong> &mdash; Capacity: {room.capacity}
@@ -62,9 +79,6 @@ const App: React.FC = () => {
           box-shadow: 0 1px 4px rgba(0,0,0,0.06);
           padding: 1.5rem 1rem;
           min-height: 300px;
-        }
-        .filters-placeholder {
-          color: #888;
         }
         .room-list-section {
           flex: 1 1 0%;
