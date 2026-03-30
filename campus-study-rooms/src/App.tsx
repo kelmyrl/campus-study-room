@@ -10,6 +10,92 @@ export type ActiveFilters = {
   features: string[];
 };
 
+const parseTime = (time: string): number => {
+  const [hours, minutes] = time.split(':').map(Number);
+  return hours * 60 + minutes;
+};
+
+const isTimeRangeValid = (startTime: string, endTime: string): boolean => {
+  if (!startTime || !endTime) return false;
+  return parseTime(startTime) < parseTime(endTime);
+};
+
+const isRoomAvailable = (
+  room: StudyRoom,
+  date: string,
+  startTime: string,
+  endTime: string,
+): boolean => {
+  if (!date || !startTime || !endTime) {
+    return true;
+  }
+
+  if (!isTimeRangeValid(startTime, endTime)) {
+    return false;
+  }
+
+  const start = parseTime(startTime);
+  const end = parseTime(endTime);
+  const dayOfMonth = Number(date.slice(-2));
+
+  if (room.building === 'Library' && start < 10 * 60) {
+    return false;
+  }
+
+  if (room.building === 'Engineering Hall' && start >= 14 * 60 && end <= 18 * 60) {
+    return false;
+  }
+
+  if (room.building === 'Science Center' && dayOfMonth % 2 === 1) {
+    return false;
+  }
+
+  if (room.building === 'Business School' && end > 17 * 60) {
+    return false;
+  }
+
+  return true;
+};
+
+const applyAvailability = (
+  rooms: StudyRoom[],
+  date: string,
+  startTime: string,
+  endTime: string,
+): StudyRoom[] => {
+  return rooms.filter((room) => isRoomAvailable(room, date, startTime, endTime));
+};
+
+const applyFilters = (rooms: StudyRoom[], filters: ActiveFilters): StudyRoom[] => {
+  return rooms.filter((room) => {
+    if (filters.building && room.building !== filters.building) {
+      return false;
+    }
+
+    if (filters.minCapacity !== null && room.capacity < filters.minCapacity) {
+      return false;
+    }
+
+    for (const feature of filters.features) {
+      if (feature === 'whiteboard' && !room.hasWhiteboard) return false;
+      if (feature === 'monitor' && !room.hasMonitor) return false;
+      if (feature === 'quiet' && !room.isQuiet) return false;
+    }
+
+    return true;
+  });
+};
+
+const computeDisplayRooms = (
+  filters: ActiveFilters,
+  date: string,
+  startTime: string,
+  endTime: string,
+): StudyRoom[] => {
+  const filtered = applyFilters(STUDY_ROOMS, filters);
+  return applyAvailability(filtered, date, startTime, endTime);
+};
+
 const App: React.FC = () => {
   const [filteredRooms, setFilteredRooms] = useState<StudyRoom[]>(STUDY_ROOMS);
   const [activeFilters, setActiveFilters] = useState<ActiveFilters>({
@@ -17,10 +103,31 @@ const App: React.FC = () => {
     minCapacity: null,
     features: [],
   });
+  const [selectedDate, setSelectedDate] = useState<string>('');
+  const [startTime, setStartTime] = useState<string>('');
+  const [endTime, setEndTime] = useState<string>('');
 
-  const handleFilterChange = (nextFilteredRooms: StudyRoom[], nextActiveFilters: ActiveFilters) => {
-    setFilteredRooms(nextFilteredRooms);
+  const handleFilterChange = (
+    nextFilteredRooms: StudyRoom[],
+    nextActiveFilters: ActiveFilters,
+  ) => {
     setActiveFilters(nextActiveFilters);
+    setFilteredRooms(applyAvailability(nextFilteredRooms, selectedDate, startTime, endTime));
+  };
+
+  const handleDateChange = (nextDate: string) => {
+    setSelectedDate(nextDate);
+    setFilteredRooms(computeDisplayRooms(activeFilters, nextDate, startTime, endTime));
+  };
+
+  const handleStartTimeChange = (nextStartTime: string) => {
+    setStartTime(nextStartTime);
+    setFilteredRooms(computeDisplayRooms(activeFilters, selectedDate, nextStartTime, endTime));
+  };
+
+  const handleEndTimeChange = (nextEndTime: string) => {
+    setEndTime(nextEndTime);
+    setFilteredRooms(computeDisplayRooms(activeFilters, selectedDate, startTime, nextEndTime));
   };
 
   return (
@@ -34,6 +141,38 @@ const App: React.FC = () => {
           <RoomFilters allRooms={STUDY_ROOMS} onFilterChange={handleFilterChange} />
         </aside>
         <section className="room-list-section">
+          <div className="availability-controls">
+            <div>
+              <label>
+                Date:
+                <input
+                  type="date"
+                  value={selectedDate}
+                  onChange={(e) => handleDateChange(e.target.value)}
+                />
+              </label>
+            </div>
+            <div>
+              <label>
+                Start Time:
+                <input
+                  type="time"
+                  value={startTime}
+                  onChange={(e) => handleStartTimeChange(e.target.value)}
+                />
+              </label>
+            </div>
+            <div>
+              <label>
+                End Time:
+                <input
+                  type="time"
+                  value={endTime}
+                  onChange={(e) => handleEndTimeChange(e.target.value)}
+                />
+              </label>
+            </div>
+          </div>
           <h2>Available Study Rooms</h2>
           <ul className="room-list">
             {filteredRooms.map((room) => (
@@ -87,6 +226,26 @@ const App: React.FC = () => {
           box-shadow: 0 1px 4px rgba(0,0,0,0.06);
           padding: 1.5rem 1rem;
         }
+        .availability-controls {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 1rem;
+          margin-bottom: 1rem;
+          padding: 0.75rem 0;
+        }
+        .availability-controls label {
+          display: flex;
+          flex-direction: column;
+          font-weight: 600;
+          font-size: 0.95rem;
+          gap: 0.25rem;
+        }
+        .availability-controls input {
+          border: 1px solid #ccc;
+          border-radius: 4px;
+          padding: 0.5rem;
+          min-width: 160px;
+        }
         .room-list {
           list-style: none;
           margin: 0;
@@ -114,6 +273,9 @@ const App: React.FC = () => {
           .filters-panel, .room-list-section {
             min-width: 0;
             width: 100%;
+          }
+          .availability-controls {
+            flex-direction: column;
           }
         }
       `}</style>
