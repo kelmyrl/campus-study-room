@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { STUDY_ROOMS, type StudyRoom } from './rooms';
 import RoomFilters from './RoomFilters';
+import RoomDetails from './RoomDetails';
 import './App.css';
 
 export type ActiveFilters = {
@@ -106,6 +107,7 @@ const App: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState<string>('');
   const [startTime, setStartTime] = useState<string>('');
   const [endTime, setEndTime] = useState<string>('');
+  const [selectedRoom, setSelectedRoom] = useState<StudyRoom | null>(null);
 
   const handleFilterChange = (
     nextFilteredRooms: StudyRoom[],
@@ -128,6 +130,20 @@ const App: React.FC = () => {
   const handleEndTimeChange = (nextEndTime: string) => {
     setEndTime(nextEndTime);
     setFilteredRooms(computeDisplayRooms(activeFilters, selectedDate, startTime, nextEndTime));
+  };
+
+  const handleClose = () => {
+    setSelectedRoom(null);
+  };
+
+  const handleRequestBooking = (room: StudyRoom) => {
+    const dateLabel = selectedDate || 'no date selected';
+    const startLabel = startTime || 'start time';
+    const endLabel = endTime || 'end time';
+    alert(
+      `Booking requested for ${room.building} ${room.roomNumber} on ${dateLabel} from ${startLabel} to ${endLabel}.`,
+    );
+    setSelectedRoom(null);
   };
 
   return (
@@ -177,17 +193,31 @@ const App: React.FC = () => {
           <ul className="room-list">
             {filteredRooms.map((room) => (
               <li key={room.id} className="room-list-item">
-                <div className="room-main-info">
-                  <strong>{room.building} {room.roomNumber}</strong> &mdash; Capacity: {room.capacity}
-                </div>
-                <div className="room-features">
-                  Features: {room.features.slice(0, 3).join(', ') || 'None'}
-                </div>
+                <button
+                  type="button"
+                  className="room-select-button"
+                  onClick={() => setSelectedRoom(room)}
+                  aria-label={`View details for ${room.building} ${room.roomNumber}`}
+                >
+                  <div className="room-main-info">
+                    <strong>{room.building} {room.roomNumber}</strong> &mdash; Capacity: {room.capacity}
+                  </div>
+                  <div className="room-features">
+                    Features: {room.features.slice(0, 3).join(', ') || 'None'}
+                  </div>
+                </button>
               </li>
             ))}
           </ul>
         </section>
       </main>
+      {selectedRoom && (
+        <RoomDetails
+          room={selectedRoom}
+          onClose={handleClose}
+          onRequestBooking={handleRequestBooking}
+        />
+      )}
       {/* Inline styles for basic responsive layout */}
       <style>{`
         .app-container {
@@ -253,13 +283,31 @@ const App: React.FC = () => {
         }
         .room-list-item {
           border-bottom: 1px solid #eee;
-          padding: 0.75rem 0;
+          padding: 0;
         }
         .room-list-item:last-child {
           border-bottom: none;
         }
+        .room-select-button {
+          width: 100%;
+          display: block;
+          background: transparent;
+          border: none;
+          text-align: left;
+          padding: 0.75rem 0;
+          cursor: pointer;
+          color: inherit;
+        }
+        .room-select-button:hover .room-main-info {
+          text-decoration: underline;
+        }
+        .room-select-button:focus-visible {
+          outline: 3px solid #2d3e50;
+          outline-offset: 2px;
+        }
         .room-main-info {
           font-size: 1.1rem;
+          margin-bottom: 0.25rem;
         }
         .room-features {
           color: #555;
